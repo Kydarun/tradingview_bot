@@ -1,4 +1,5 @@
 const axios = require('axios').default
+const TelegramBot = require('node-telegram-bot-api')
 const { DateTime } = require("luxon")
 const express = require('express')
 
@@ -8,16 +9,15 @@ app.get('/', (request, response) => {
   const botToken = '5067222237:AAEqGd3C3MbsLN51G218zVTqJOeBFwYLI2s'
   const chatId = '1306821852'
 
+  const bot = new TelegramBot(botToken, { polling: true })
+
   let body = ''
   request.on('data', chunk => {
     body = `${body}${chunk}`
   })
   request.on('end', () => {
     if (body) {
-        axios.post(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        chat_id: chatId,
-        text: body
-      }).then((res) => {
+      bot.sendMessage(chatId, body).then((res) => {
         console.log(res)
         response.write('Y')
         response.end()
