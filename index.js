@@ -5,6 +5,11 @@ const express = require('express')
 
 var app = express()
 
+app.get('/', (request, response) => {
+  response.write(`Hello! It's ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}.`)
+  response.end()
+})
+
 app.post('/', (request, response) => {
   const botToken = '5067222237:AAEqGd3C3MbsLN51G218zVTqJOeBFwYLI2s'
   const chatId = '1306821852'
@@ -22,10 +27,6 @@ app.post('/', (request, response) => {
         response.write('Y')
         response.end()
       })
-    }
-    else {
-      response.write(`Hello! It's ${DateTime.now().toLocaleString(DateTime.DATETIME_MED)}.`)
-      response.end()
     }
   })
 })
