@@ -1,11 +1,13 @@
 const axios = require('axios').default
-const http = require('http')
 const { DateTime } = require("luxon")
+const express = require('express')
 
-const botToken = '5067222237:AAEqGd3C3MbsLN51G218zVTqJOeBFwYLI2s'
-const chatId = '1306821852'
+var app = express()
 
-http.createServer((request, response) => {
+app.get('/', (request, response) => {
+  const botToken = '5067222237:AAEqGd3C3MbsLN51G218zVTqJOeBFwYLI2s'
+  const chatId = '1306821852'
+
   let body = ''
   request.on('data', chunk => {
     body = `${body}${chunk}`
@@ -26,4 +28,6 @@ http.createServer((request, response) => {
       response.end()
     }
   })
-}).listen()
+})
+
+app.listen()
