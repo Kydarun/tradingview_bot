@@ -36,7 +36,7 @@ app.listen()
 
 // Telegram Conversation Bot
 const cryptoBotId = '5144119831:AAEe6D72cqvcNxdf4JEH_Ksj5vjW7Dkd520'
-const cryptoChatId = '1306821852'
+const cryptoChatId = 1306821852
 const stateMachine = createMachine({
   id: 'chat_stage',
   initial: 'ready',
@@ -52,8 +52,9 @@ const stateMachine = createMachine({
 
 const chatBot = new TelegramBot(cryptoBotId, { polling: true })
 
-chatBot.on('message', message => {
-  if (message.chat_id === cryptoChatId) {
-    console.log(message.text)
+chatBot.on('message', (message) => {
+  console.log(message.chat.id)
+  if (message.chat.id === cryptoChatId) {
+    // At this moment only process my private chat
   }
 })
