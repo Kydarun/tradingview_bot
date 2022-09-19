@@ -1,5 +1,6 @@
 const axios = require('axios').default
 const TelegramBot = require('node-telegram-bot-api')
+const { createMachine } = require('xstate')
 const { DateTime } = require("luxon")
 const express = require('express')
 
@@ -32,3 +33,27 @@ app.get('/', (request, response) => {
 })
 
 app.listen()
+
+// Telegram Conversation Bot
+const cryptoBotId = '5144119831:AAEe6D72cqvcNxdf4JEH_Ksj5vjW7Dkd520'
+const cryptoChatId = '1306821852'
+const stateMachine = createMachine({
+  id: 'chat_stage',
+  initial: 'ready',
+  predictableActionArguments: true,
+  states: {
+    ready: {},
+    direction: {},
+    entry: {},
+    exit: {},
+    summary: {}
+  }
+})
+
+const chatBot = new TelegramBot(cryptoBotId, { polling: true })
+
+chatBot.on('message', message => {
+  if (message.chat_id === cryptoChatId) {
+    console.log(message.text)
+  }
+})
