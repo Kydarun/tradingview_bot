@@ -5,7 +5,7 @@ const express = require('express')
 
 var app = express()
 
-app.get('/', (request, response) => {
+app.post('/', (request, response) => {
   const botToken = '5067222237:AAEqGd3C3MbsLN51G218zVTqJOeBFwYLI2s'
   const chatId = '1306821852'
 
