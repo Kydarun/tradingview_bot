@@ -9,6 +9,17 @@ class RiskBot {
         this.initBot()
     }
 
+    mergeMeta(meta) {
+        return Object.keys(meta).reduce((acc, key) => {
+          const value = meta[key]
+      
+          // Assuming each meta value is an object
+          Object.assign(acc, value)
+      
+          return acc
+        }, {})
+    }
+
     initStates() {
         this.stateMachine = interpret(createMachine({
             id: 'risk',
@@ -22,7 +33,7 @@ class RiskBot {
             states: {
                 ready: {
                     on: {
-                        NEXT: { 
+                        DIRECTION: { 
                             target: 'direction',
                             actions: send((context, event) => {
                                 
@@ -35,7 +46,7 @@ class RiskBot {
                 },
                 direction: {
                     on: {
-                        NEXT: { 
+                        ENTRY: { 
                             target: 'entry'
                         }
                     },
@@ -45,7 +56,7 @@ class RiskBot {
                 },
                 entry: {
                     on: {
-                        NEXT: { 
+                        EXIT: { 
                             target: 'exit'
                         }
                     },
@@ -55,7 +66,7 @@ class RiskBot {
                 },
                 exit: {
                     on: {
-                        NEXT: { 
+                        SUMMARY: { 
                             target: 'summary'
                         }
                     }
@@ -74,14 +85,19 @@ class RiskBot {
             if (message.chat.id === this.chatId) {
                 if (message.text === '/risk') {
                     this.stateMachine.start()
-                    this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().meta.message)
-                    this.stateMachine.send('NEXT')
-                    this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().meta.message)
+                    this.bot.sendMessage(this.chatId, mergeMeta(this.stateMachine.getSnapshot().meta).message)
+                    this.stateMachine.send('DIRECTION')
+                    this.bot.sendMessage(this.chatId, mergeMeta(this.stateMachine.getSnapshot().meta).message)
                 }
                 else {
-                    if (!this.stateMachine.getSnapshot().matches('summary')) {
-                        this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().meta.message)
-                        this.stateMachine.send('NEXT')
+                    const snapshot = this.stateMachine.getSnapshot()
+                    if (snapshot.matches('ENTRY')) {
+                        this.stateMachine.send('EXIT')
+                        this.bot.sendMessage(this.chatId, mergeMeta(this.stateMachine.getSnapshot().meta).message)
+                    }
+                    else if (snapshot.matches('EXIT')) {
+                        this.stateMachine.send('SUMMARY')
+                        this.bot.sendMessage(this.chatId, mergeMeta(this.stateMachine.getSnapshot().meta).message)
                     }
                 }
             }
