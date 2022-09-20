@@ -20,10 +20,34 @@ class RiskBot {
                 exit: ''
             },
             states: {
-                ready: {},
-                direction: {},
-                entry: {},
-                exit: {},
+                ready: {
+                    on: {
+                        NEXT: { 
+                            target: 'direction'
+                        }
+                    }
+                },
+                direction: {
+                    on: {
+                        NEXT: { 
+                            target: 'entry'
+                        }
+                    }
+                },
+                entry: {
+                    on: {
+                        NEXT: { 
+                            target: 'exit'
+                        }
+                    }
+                },
+                exit: {
+                    on: {
+                        NEXT: { 
+                            target: 'summary'
+                        }
+                    }
+                },
                 summary: {
                     type: 'final'
                 }
@@ -33,14 +57,17 @@ class RiskBot {
 
     initBot() {
         this.bot = new TelegramBot(this.botId, { polling: true })
+        this.stateMachine.start()
         this.bot.on('message', message => {
             if (message.chat.id === this.chatId) {
                 if (message.text === '/risk') {
                     this.stateMachine.start()
-                    this.bot.sendMessage(this.chatId, 'Welcome')
+                    this.stateMachine.send('NEXT')
+                    this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().value.toString())
                 }
                 else {
-                    this.bot.sendMessage(this.chatId, 'Well received')
+                    this.stateMachine.send('NEXT')
+                    this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().value.toString())
                 }
             }
         })
