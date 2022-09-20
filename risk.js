@@ -1,4 +1,4 @@
-const { createMachine, interpret } = require('xstate')
+const { createMachine, interpret, send } = require('xstate')
 const TelegramBot = require('node-telegram-bot-api')
 
 class RiskBot {
@@ -23,21 +23,30 @@ class RiskBot {
                 ready: {
                     on: {
                         NEXT: { 
-                            target: 'direction'
+                            target: 'direction',
+                            actions: send((context, event) => {
+                                
+                            })
                         }
                     }
                 },
                 direction: {
                     on: {
                         NEXT: { 
-                            target: 'entry'
+                            target: 'entry',
+                            actions: send((context, event) => {
+
+                            })
                         }
                     }
                 },
                 entry: {
                     on: {
                         NEXT: { 
-                            target: 'exit'
+                            target: 'exit',
+                            actions: send((context, event) => {
+                                
+                            })
                         }
                     }
                 },
@@ -66,8 +75,10 @@ class RiskBot {
                     this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().value.toString())
                 }
                 else {
-                    this.stateMachine.send('NEXT')
-                    this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().value.toString())
+                    if (!this.stateMachine.getSnapshot().matches('summary')) {
+                        this.stateMachine.send({ type: 'NEXT', payload: message.text })
+                        this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().value.toString())
+                    }
                 }
             }
         })
