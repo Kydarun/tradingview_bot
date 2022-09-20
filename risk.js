@@ -37,10 +37,10 @@ class RiskBot {
             if (message.chat.id === this.chatId) {
                 if (message.text === '/risk') {
                     this.stateMachine.start()
-                    this.bot.sendMessage(this.chatId, 'Well received')
+                    this.bot.sendMessage(this.chatId, 'Welcome')
                 }
                 else {
-
+                    this.bot.sendMessage(this.chatId, 'Well received')
                 }
             }
         })
