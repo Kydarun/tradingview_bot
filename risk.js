@@ -74,8 +74,7 @@ class RiskBot {
                 if (message.text === '/risk') {
                     this.stateMachine.onTransition(state => {
                         this.bot.sendMessage(this.chatId, mergeMeta(state.meta).message)
-                    })
-                    this.stateMachine.start()
+                    }).start()
                     this.stateMachine.send('NEXT')
                 }
                 else {
