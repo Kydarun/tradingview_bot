@@ -1,8 +1,9 @@
 const axios = require('axios').default
 const TelegramBot = require('node-telegram-bot-api')
-const { createMachine } = require('xstate')
+const { createMachine, interpret } = require('xstate')
 const { DateTime } = require("luxon")
 const express = require('express')
+const { RiskBot } = require('./risk')
 
 var app = express()
 
@@ -37,24 +38,4 @@ app.listen()
 // Telegram Conversation Bot
 const cryptoBotId = '5144119831:AAEe6D72cqvcNxdf4JEH_Ksj5vjW7Dkd520'
 const cryptoChatId = 1306821852
-const stateMachine = createMachine({
-  id: 'chat_stage',
-  initial: 'ready',
-  predictableActionArguments: true,
-  states: {
-    ready: {},
-    direction: {},
-    entry: {},
-    exit: {},
-    summary: {}
-  }
-})
-
-const chatBot = new TelegramBot(cryptoBotId, { polling: true })
-
-chatBot.on('message', (message) => {
-  console.log(message.chat.id)
-  if (message.chat.id === cryptoChatId) {
-    // At this moment only process my private chat
-  }
-})
+const bot = new RiskBot(cryptoBotId, cryptoChatId)
