@@ -28,26 +28,29 @@ class RiskBot {
                                 
                             })
                         }
+                    },
+                    meta: {
+                        message: 'Quickly calculate entry size by entry & SL.'
                     }
                 },
                 direction: {
                     on: {
                         NEXT: { 
-                            target: 'entry',
-                            actions: send((context, event) => {
-
-                            })
+                            target: 'entry'
                         }
+                    },
+                    meta: {
+                        message: 'Enter Entry Price.'
                     }
                 },
                 entry: {
                     on: {
                         NEXT: { 
-                            target: 'exit',
-                            actions: send((context, event) => {
-                                
-                            })
+                            target: 'exit'
                         }
+                    },
+                    meta: {
+                        message: 'Enter Stop Loss.'
                     }
                 },
                 exit: {
@@ -71,13 +74,14 @@ class RiskBot {
             if (message.chat.id === this.chatId) {
                 if (message.text === '/risk') {
                     this.stateMachine.start()
+                    this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().meta.message)
                     this.stateMachine.send('NEXT')
-                    this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().value.toString())
+                    this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().meta.message)
                 }
                 else {
                     if (!this.stateMachine.getSnapshot().matches('summary')) {
-                        this.stateMachine.send({ type: 'NEXT', payload: message.text })
-                        this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().value.toString())
+                        this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().meta.message)
+                        this.stateMachine.send('NEXT')
                     }
                 }
             }

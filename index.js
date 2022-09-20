@@ -1,6 +1,6 @@
 const axios = require('axios').default
 const TelegramBot = require('node-telegram-bot-api')
-const { createMachine, interpret } = require('xstate')
+const { createMachine, interpret, send } = require('xstate')
 const { DateTime } = require("luxon")
 const express = require('express')
 const { RiskBot } = require('./risk')
