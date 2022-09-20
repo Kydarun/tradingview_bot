@@ -21,7 +21,7 @@ class RiskBot {
     }
 
     initStates() {
-        this.stateMachine = interpret(createMachine({
+        this.stateMachine = createMachine({
             id: 'risk',
             initial: 'ready',
             predictableActionArguments: true,
@@ -33,7 +33,7 @@ class RiskBot {
             states: {
                 ready: {
                     on: {
-                        DIRECTION: { 
+                        NEXT: { 
                             target: 'direction',
                             actions: send((context, event) => {
                                 
@@ -46,7 +46,7 @@ class RiskBot {
                 },
                 direction: {
                     on: {
-                        ENTRY: { 
+                        NEXT: { 
                             target: 'entry'
                         }
                     },
@@ -56,7 +56,7 @@ class RiskBot {
                 },
                 entry: {
                     on: {
-                        EXIT: { 
+                        NEXT: { 
                             target: 'exit'
                         }
                     },
@@ -66,7 +66,7 @@ class RiskBot {
                 },
                 exit: {
                     on: {
-                        SUMMARY: { 
+                        NEXT: { 
                             target: 'summary'
                         }
                     }
@@ -75,7 +75,7 @@ class RiskBot {
                     type: 'final'
                 }
             }
-        }))
+        })
     }
 
     initBot() {
@@ -86,18 +86,13 @@ class RiskBot {
                 if (message.text === '/risk') {
                     this.stateMachine.start()
                     this.bot.sendMessage(this.chatId, mergeMeta(this.stateMachine.getSnapshot().meta).message)
-                    this.stateMachine.send('DIRECTION')
-                    this.bot.sendMessage(this.chatId, mergeMeta(this.stateMachine.getSnapshot().meta).message)
+                    this.stateMachine.transition(this.stateMachine.getSnapshot().value, 'NEXT')
+                    this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().meta.message)
                 }
                 else {
-                    const snapshot = this.stateMachine.getSnapshot()
-                    if (snapshot.matches('ENTRY')) {
-                        this.stateMachine.send('EXIT')
-                        this.bot.sendMessage(this.chatId, mergeMeta(this.stateMachine.getSnapshot().meta).message)
-                    }
-                    else if (snapshot.matches('EXIT')) {
-                        this.stateMachine.send('SUMMARY')
-                        this.bot.sendMessage(this.chatId, mergeMeta(this.stateMachine.getSnapshot().meta).message)
+                    if (!this.stateMachine.getSnapshot().matches('summary')) {
+                        this.stateMachine.transition(this.stateMachine.getSnapshot().value, 'NEXT')
+                        this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().meta.message)
                     }
                 }
             }

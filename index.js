@@ -38,4 +38,76 @@ app.listen()
 // Telegram Conversation Bot
 const cryptoBotId = '5144119831:AAEe6D72cqvcNxdf4JEH_Ksj5vjW7Dkd520'
 const cryptoChatId = 1306821852
-const bot = new RiskBot(cryptoBotId, cryptoChatId)
+//const bot = new RiskBot(cryptoBotId, cryptoChatId)
+
+const stateMachine = interpret(createMachine({
+    id: 'risk',
+    initial: 'ready',
+    predictableActionArguments: true,
+    context: {
+        direction: '',
+        entry: '',
+        exit: ''
+    },
+    states: {
+        ready: {
+            on: {
+                NEXT: { 
+                    target: 'direction',
+                    actions: send((context, event) => {
+                        
+                    })
+                }
+            },
+            meta: {
+                message: 'Quickly calculate entry size by entry & SL.'
+            }
+        },
+        direction: {
+            on: {
+                NEXT: { 
+                    target: 'entry'
+                }
+            },
+            meta: {
+                message: 'Enter Entry Price.'
+            }
+        },
+        entry: {
+            on: {
+                NEXT: { 
+                    target: 'exit'
+                }
+            },
+            meta: {
+                message: 'Enter Stop Loss.'
+            }
+        },
+        exit: {
+            on: {
+                NEXT: { 
+                    target: 'summary'
+                }
+            }
+        },
+        summary: {
+            type: 'final'
+        }
+    }
+}))
+
+function mergeMeta(meta) {
+    return Object.keys(meta).reduce((acc, key) => {
+      const value = meta[key]
+  
+      // Assuming each meta value is an object
+      Object.assign(acc, value)
+  
+      return acc
+    }, {})
+}
+
+stateMachine.start()
+console.log(mergeMeta(stateMachine.getSnapshot().meta).message)
+stateMachine.send('NEXT')
+console.log(mergeMeta(stateMachine.getSnapshot().meta).message)
