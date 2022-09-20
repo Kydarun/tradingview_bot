@@ -21,7 +21,7 @@ class RiskBot {
     }
 
     initStates() {
-        this.stateMachine = createMachine({
+        this.stateMachine = interpret(createMachine({
             id: 'risk',
             initial: 'ready',
             predictableActionArguments: true,
@@ -33,12 +33,7 @@ class RiskBot {
             states: {
                 ready: {
                     on: {
-                        NEXT: { 
-                            target: 'direction',
-                            actions: send((context, event) => {
-                                
-                            })
-                        }
+                        NEXT: 'direction'
                     },
                     meta: {
                         message: 'Quickly calculate entry size by entry & SL.'
@@ -46,9 +41,7 @@ class RiskBot {
                 },
                 direction: {
                     on: {
-                        NEXT: { 
-                            target: 'entry'
-                        }
+                        NEXT: 'entry'
                     },
                     meta: {
                         message: 'Enter Entry Price.'
@@ -56,9 +49,7 @@ class RiskBot {
                 },
                 entry: {
                     on: {
-                        NEXT: { 
-                            target: 'exit'
-                        }
+                        NEXT: 'exit'
                     },
                     meta: {
                         message: 'Enter Stop Loss.'
@@ -66,16 +57,14 @@ class RiskBot {
                 },
                 exit: {
                     on: {
-                        NEXT: { 
-                            target: 'summary'
-                        }
+                        NEXT: 'summary'
                     }
                 },
                 summary: {
                     type: 'final'
                 }
             }
-        })
+        }))
     }
 
     initBot() {
@@ -83,15 +72,15 @@ class RiskBot {
         this.bot.on('message', message => {
             if (message.chat.id === this.chatId) {
                 if (message.text === '/risk') {
-                    this.initStates()
-                    this.bot.sendMessage(this.chatId, mergeMeta(this.stateMachine.getSnapshot().meta).message)
-                    this.stateMachine.transition(this.stateMachine.getSnapshot().value, 'NEXT')
-                    this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().meta.message)
+                    this.stateMachine.onTransition(event => {
+                        this.bot.sendMessage(this.chatId, mergeMeta(event.meta).message)
+                    })
+                    this.stateMachine.start()
+                    this.stateMachine.send('NEXT')
                 }
                 else {
                     if (!this.stateMachine.getSnapshot().matches('summary')) {
-                        this.stateMachine.transition(this.stateMachine.getSnapshot().value, 'NEXT')
-                        this.bot.sendMessage(this.chatId, this.stateMachine.getSnapshot().meta.message)
+                        this.stateMachine.send('NEXT')
                     }
                 }
             }
