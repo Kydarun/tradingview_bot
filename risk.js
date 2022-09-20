@@ -80,7 +80,6 @@ class RiskBot {
 
     initBot() {
         this.bot = new TelegramBot(this.botId, { polling: true })
-        this.stateMachine.start()
         this.bot.on('message', message => {
             if (message.chat.id === this.chatId) {
                 if (message.text === '/risk') {
