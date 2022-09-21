@@ -44,7 +44,7 @@ class RiskBot {
                         NEXT: 'entry'
                     },
                     meta: {
-                        message: 'Enter Entry Price.'
+                        message: 'Enter Direction.'
                     }
                 },
                 entry: {
@@ -52,12 +52,15 @@ class RiskBot {
                         NEXT: 'exit'
                     },
                     meta: {
-                        message: 'Enter Stop Loss.'
+                        message: 'Enter Entry Price.'
                     }
                 },
                 exit: {
                     on: {
                         NEXT: 'summary'
+                    },
+                    meta: {
+                        message: 'Enter Stop Loss.'
                     }
                 },
                 summary: {
