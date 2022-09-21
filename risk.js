@@ -48,8 +48,7 @@ class RiskBot {
                                     direction: (context, event) => {
                                         context.direction = event.payload
                                     }
-                                }),
-                                send('NEXT')
+                                })
                             ]
                         }
                     },
@@ -66,8 +65,7 @@ class RiskBot {
                                     entry: (context, event) => {
                                         context.entry = event.payload
                                     }
-                                }),
-                                send('NEXT')
+                                })
                             ]
                         }
                     },
@@ -84,8 +82,7 @@ class RiskBot {
                                     exit: (context, event) => {
                                         context.exit = event.payload
                                     }
-                                }),
-                                send('NEXT')
+                                })
                             ]
                         }
                     },
@@ -107,7 +104,7 @@ class RiskBot {
                 if (message.text === '/risk') {
                     this.stateMachine.onTransition(state => {
                         if (state.value === 'summary') {
-                            this.bot.sendMessage(this.chatId, 'Here is summary!')
+                            this.bot.sendMessage(this.chatId, `Direction: ${state.context.direction}\nEntry: ${state.context.entry}\Exit: ${state.context.exit}`)
                         }
                         else {
                             this.bot.sendMessage(this.chatId, this.mergeMeta(state.meta).message)
