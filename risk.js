@@ -168,13 +168,13 @@ class RiskBot {
         if (isNaN(context.exit)) return 'Invalid Exit Price. Please type /risk to restart.'
         if (context.direction.toLowerCase() !== 'long' && context.direction.toLowerCase() !== 'short') return 'Unable to identify direction. Please type /risk to restart.'
         
-        var summary = `<b>⚠️Entry Size Summary</b>\n\nDirection: ${context.direction}\nEntry: ${context.entry}\nStop Loss: ${context.exit}\n`
+        var summary = `<b>⚠️ Entry Size Summary ⚠️</b>\n\nDirection: ${context.direction}\nEntry: ${context.entry}\nStop Loss: ${context.exit}\n`
         
         const entrySize = this.getEntrySize(context)
 
         const riskSizes = [1,2,3,4,5,10]
         riskSizes.forEach((value, index, array) => {
-            summary = `${summary}\nRisk <b>USDT ${value}></b> ➡️ Entry <b>USDT ${(value * entrySize).toFixed(2)}</b>`
+            summary = `${summary}\nRisk <b>USDT ${value}</b> ➡️ <b>USDT ${(value * entrySize).toFixed(2)}</b> Entry Size`
         })
         return summary
     }
