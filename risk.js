@@ -34,14 +34,19 @@ class RiskBot {
             states: {
                 ready: {
                     entry: [
-                        assign({
-                            direction: (_, event) => '',
-                            entry: (_, event) => '',
-                            exit: (_, event) => ''
-                        })
+                        (context, event) => {
+                            assign({
+                                direction: (_, event) => '',
+                                entry: (_, event) => '',
+                                exit: (_, event) => ''
+                            })
+                        }
                     ],
                     on: {
-                        NEXT: 'direction'
+                        NEXT: 'direction',
+                        RESTART: {
+                            target: 'ready'
+                        }
                     },
                     meta: {
                         message: 'Quickly calculate entry size by entry & SL.'
@@ -56,6 +61,9 @@ class RiskBot {
                                     direction: (_, event) => event.payload.input
                                 })
                             ]
+                        },
+                        RESTART: {
+                            target: 'ready'
                         }
                     },
                     meta: {
@@ -74,6 +82,9 @@ class RiskBot {
                                     entry: (_, event) => event.payload.input
                                 })
                             ]
+                        },
+                        RESTART: {
+                            target: 'ready'
                         }
                     },
                     meta: {
@@ -89,6 +100,9 @@ class RiskBot {
                                     exit: (_, event) => event.payload.input
                                 })
                             ]
+                        },
+                        RESTART: {
+                            target: 'ready'
                         }
                     },
                     meta: {
@@ -96,7 +110,11 @@ class RiskBot {
                     }
                 },
                 summary: {
-                    type: 'final'
+                    on: {
+                        RESTART: {
+                            target: 'ready'
+                        }
+                    }
                 }
             }
         }))
@@ -104,7 +122,9 @@ class RiskBot {
     }
 
     initBot() {
-        this.bot = new TelegramBot(this.botId, { polling: true })
+        if (!this.debug) {
+            this.bot = new TelegramBot(this.botId, { polling: true })
+        }
         this.stateMachine.onTransition(state => {
             if (state.value === 'summary') {
                 if (!this.debug) {
@@ -122,7 +142,7 @@ class RiskBot {
                     })
                 }
                 else {
-                    console.log(this.getSummary(meta.message))
+                    console.log(meta.message)
                 }
             }
         })
@@ -131,7 +151,7 @@ class RiskBot {
                 if (message.chat.id === this.chatId) {
                     if (message.text === '/risk') {
                         if (this.stateMachine.getSnapshot().value !== 'ready') {
-                            
+                            this.stateMachine.send('RESTART')
                         }
                         this.stateMachine.start()
                         this.stateMachine.send('NEXT')
@@ -148,6 +168,9 @@ class RiskBot {
 
     debugNextStep(input) {
         if (input === '/risk') {
+            if (this.stateMachine.getSnapshot().value !== 'ready') {
+                this.stateMachine.send('RESTART')
+            }
             this.stateMachine.start()
             this.stateMachine.send('NEXT')
         }
