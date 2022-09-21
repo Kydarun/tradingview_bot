@@ -135,10 +135,17 @@ class RiskBot {
                 if (this.telegramBot) {
                     this.telegramBot.sendMessage(this.chatId, meta.message, {
                         'reply_markup': meta.reply_markup
+                    }).then(res => {
+                        if (state.value === 'ready') {
+                            this.stateMachine.send('NEXT')
+                        }
                     })
                 }
                 else {
                     console.log(meta.message)
+                    if (state.value === 'ready') {
+                        this.stateMachine.send('NEXT')
+                    }
                 }
             }
         })
@@ -159,7 +166,6 @@ class RiskBot {
             else {
                 this.stateMachine.start()
             }
-            this.stateMachine.send('NEXT')
         }
         else {
             if (!this.stateMachine.getSnapshot().matches('summary')) {
