@@ -39,3 +39,7 @@ app.listen()
 const cryptoBotId = '5144119831:AAEe6D72cqvcNxdf4JEH_Ksj5vjW7Dkd520'
 const cryptoChatId = 1306821852
 const bot = new RiskBot(cryptoBotId, cryptoChatId)
+// bot.debugNextStep('/risk')
+// bot.debugNextStep('Long')
+// bot.debugNextStep('13.750')
+// bot.debugNextStep('13.657')

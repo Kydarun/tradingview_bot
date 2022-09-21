@@ -2,9 +2,10 @@ const { createMachine, interpret, assign } = require('xstate')
 const TelegramBot = require('node-telegram-bot-api')
 
 class RiskBot {
-    constructor(botId, chatId) {
+    constructor(botId, chatId, debug = false) {
         this.botId = botId
         this.chatId = chatId
+        this.debug = debug
         this.initStates()
         this.initBot()
     }
@@ -98,28 +99,52 @@ class RiskBot {
         this.bot = new TelegramBot(this.botId, { polling: true })
         this.stateMachine.onTransition(state => {
             if (state.value === 'summary') {
-                this.bot.sendMessage(this.chatId, this.getSummary(state.context), { parse_mode: 'HTML' })
+                if (!this.debug) {
+                    this.bot.sendMessage(this.chatId, this.getSummary(state.context), { parse_mode: 'HTML' })
+                }
+                else {
+                    console.log(this.getSummary(state.context))
+                }
             }
             else {
                 const meta = this.mergeMeta(state.meta)
-                this.bot.sendMessage(this.chatId, meta.message, {
-                    'reply_markup': meta.reply_markup
-                })
-            }
-        })
-        this.bot.on('message', message => {
-            if (message.chat.id === this.chatId) {
-                if (message.text === '/risk') {
-                    this.stateMachine.start()
-                    this.stateMachine.send('NEXT')
+                if (!this.debug) {
+                    this.bot.sendMessage(this.chatId, meta.message, {
+                        'reply_markup': meta.reply_markup
+                    })
                 }
                 else {
-                    if (!this.stateMachine.getSnapshot().matches('summary')) {
-                        this.stateMachine.send({type: 'NEXT', payload: { input: message.text }})
-                    }
+                    console.log(this.getSummary(meta.message))
                 }
             }
         })
+        if (!this.debug) {
+            this.bot.on('message', message => {
+                if (message.chat.id === this.chatId) {
+                    if (message.text === '/risk') {
+                        this.stateMachine.start()
+                        this.stateMachine.send('NEXT')
+                    }
+                    else {
+                        if (!this.stateMachine.getSnapshot().matches('summary')) {
+                            this.stateMachine.send({type: 'NEXT', payload: { input: message.text }})
+                        }
+                    }
+                }
+            })
+        }
+    }
+
+    debugNextStep(input) {
+        if (input === '/risk') {
+            this.stateMachine.start()
+            this.stateMachine.send('NEXT')
+        }
+        else {
+            if (!this.stateMachine.getSnapshot().matches('summary')) {
+                this.stateMachine.send({type: 'NEXT', payload: { input: input }})
+            }
+        }
     }
 
     getEntrySize(context) {
@@ -143,10 +168,11 @@ class RiskBot {
         var summary = `<b>Entry Size Summary</b>\n\nDirection: ${context.direction}\nEntry: ${context.entry}\nStop Loss: ${context.exit}\n\n`
         
         const entrySize = this.getEntrySize(context)
-        for (i in [1,2,3,4,5,10]) {
-            summary = `${summary}\nRisk USDT${i} = USDT${(i * entrySize).toFixed(2)}`
-        }
 
+        const riskSizes = [1,2,3,4,5,10]
+        riskSizes.forEach((value, index, array) => {
+            summary = `${summary}\nRisk USDT ${value} -> Entry Size USDT ${(value * entrySize).toFixed(2)}`
+        })
         return summary
     }
 }
