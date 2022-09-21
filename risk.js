@@ -45,9 +45,7 @@ class RiskBot {
                             target: 'entry',
                             actions: [
                                 assign({
-                                    direction: (context, event) => {
-                                        context.direction = event.payload.input
-                                    }
+                                    direction: (_, event) => event.payload.input
                                 })
                             ]
                         }
@@ -62,9 +60,7 @@ class RiskBot {
                             target: 'exit',
                             actions: [
                                 assign({
-                                    entry: (context, event) => {
-                                        context.entry = event.payload.input
-                                    }
+                                    entry: (_, event) => event.payload.input
                                 })
                             ]
                         }
@@ -79,9 +75,7 @@ class RiskBot {
                             target: 'summary',
                             actions: [
                                 assign({
-                                    exit: (context, event) => {
-                                        context.exit = event.payload.input
-                                    }
+                                    exit: (_, event) => event.payload.input
                                 })
                             ]
                         }
