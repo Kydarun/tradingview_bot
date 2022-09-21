@@ -2,10 +2,9 @@ const { createMachine, interpret, assign } = require('xstate')
 const TelegramBot = require('node-telegram-bot-api')
 
 class RiskBot {
-    constructor(botId, chatId, debug = false) {
-        this.botId = botId
+    constructor(telegramBot, chatId) {
+        this.telegramBot = telegramBot
         this.chatId = chatId
-        this.debug = debug
         this.initStates()
         this.initBot()
     }
@@ -122,13 +121,10 @@ class RiskBot {
     }
 
     initBot() {
-        if (!this.debug) {
-            this.bot = new TelegramBot(this.botId, { polling: true })
-        }
         this.stateMachine.onTransition(state => {
             if (state.value === 'summary') {
-                if (!this.debug) {
-                    this.bot.sendMessage(this.chatId, this.getSummary(state.context), { parse_mode: 'HTML' })
+                if (this.telegramBot) {
+                    this.telegramBot.sendMessage(this.chatId, this.getSummary(state.context), { parse_mode: 'HTML' })
                 }
                 else {
                     console.log(this.getSummary(state.context))
@@ -136,8 +132,8 @@ class RiskBot {
             }
             else {
                 const meta = this.mergeMeta(state.meta)
-                if (!this.debug) {
-                    this.bot.sendMessage(this.chatId, meta.message, {
+                if (this.telegramBot) {
+                    this.telegramBot.sendMessage(this.chatId, meta.message, {
                         'reply_markup': meta.reply_markup
                     })
                 }
@@ -146,8 +142,8 @@ class RiskBot {
                 }
             }
         })
-        if (!this.debug) {
-            this.bot.on('message', message => {
+        if (this.telegramBot) {
+            this.telegramBot.on('message', message => {
                 if (message.chat.id === this.chatId) {
                     this.next(message.text)
                 }
