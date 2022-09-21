@@ -1,4 +1,4 @@
-const { createMachine, interpret, send, assign } = require('xstate')
+const { createMachine, interpret, assign } = require('xstate')
 const TelegramBot = require('node-telegram-bot-api')
 
 class RiskBot {
@@ -51,7 +51,10 @@ class RiskBot {
                         }
                     },
                     meta: {
-                        message: 'Enter Direction.'
+                        message: 'Enter Direction.',
+                        reply_markup: {
+                            keyboard:[['Long'], ['Short']]
+                        }
                     }
                 },
                 entry: {
@@ -101,7 +104,10 @@ class RiskBot {
                             this.bot.sendMessage(this.chatId, `Direction: ${state.context.direction}\nEntry: ${state.context.entry}\nExit: ${state.context.exit}`)
                         }
                         else {
-                            this.bot.sendMessage(this.chatId, this.mergeMeta(state.meta).message)
+                            const meta = this.mergeMeta(state.meta)
+                            this.bot.sendMessage(this.chatId, meta.message, {
+                                'reply_markup': meta.reply_markup
+                            })
                         }
                     }).start()
                     this.stateMachine.send('NEXT')
@@ -113,6 +119,10 @@ class RiskBot {
                 }
             }
         })
+    }
+
+    getSummary() {
+        var summary = '<b>Entry Plan Summary</b>\n'
     }
 }
 
