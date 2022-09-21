@@ -39,8 +39,17 @@ app.listen()
 const cryptoBotId = '5144119831:AAEe6D72cqvcNxdf4JEH_Ksj5vjW7Dkd520'
 const cryptoChatId = 1306821852
 
+/* Production */
 const telegram = new TelegramBot(cryptoBotId, { polling: true })
 const bot = new RiskBot(telegram, cryptoChatId, true)
+
+telegram.on('message', message => {
+  if (message.chat.id === cryptoChatId) {
+    bot.next(message.text)
+  }
+})
+
+/* Debug */
 // const bot = new RiskBot(null, cryptoChatId, true)
 // bot.next('/risk')
 // bot.next('Long')
