@@ -124,7 +124,6 @@ class RiskBot {
                     if (message.text === '/risk') {
                         if (this.stateMachine.getSnapshot().value !== 'ready') {
                             this.stateMachine.stop()
-                            this.initStates()
                         }
                         this.stateMachine.start()
                         this.stateMachine.send('NEXT')
