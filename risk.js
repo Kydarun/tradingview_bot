@@ -123,6 +123,7 @@ class RiskBot {
                 if (message.chat.id === this.chatId) {
                     if (message.text === '/risk') {
                         if (this.stateMachine.getSnapshot().value !== 'ready') {
+                            this.stateMachine.stop()
                             this.initStates()
                         }
                         this.stateMachine.start()
