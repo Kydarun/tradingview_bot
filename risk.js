@@ -104,7 +104,7 @@ class RiskBot {
                 if (message.text === '/risk') {
                     this.stateMachine.onTransition(state => {
                         if (state.value === 'summary') {
-                            this.bot.sendMessage(this.chatId, `Direction: ${state.context.direction}\nEntry: ${state.context.entry}\Exit: ${state.context.exit}`)
+                            this.bot.sendMessage(this.chatId, `Direction: ${state.context.direction}\nEntry: ${state.context.entry}\nExit: ${state.context.exit}`)
                         }
                         else {
                             this.bot.sendMessage(this.chatId, this.mergeMeta(state.meta).message)
