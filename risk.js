@@ -73,11 +73,11 @@ class RiskBot {
             if (message.chat.id === this.chatId) {
                 if (message.text === '/risk') {
                     this.stateMachine.onTransition(state => {
-                        if (!state.value.matches('summary')) {
-                            this.bot.sendMessage(this.chatId, this.mergeMeta(state.meta).message)
+                        if (state.value === 'summary') {
+                            this.bot.sendMessage(this.chatId, 'Here is summary!')
                         }
                         else {
-                            this.bot.sendMessage(this.chatId, 'Here is summary!')
+                            this.bot.sendMessage(this.chatId, this.mergeMeta(state.meta).message)
                         }
                     }).start()
                     this.stateMachine.send('NEXT')
