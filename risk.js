@@ -174,7 +174,7 @@ class RiskBot {
 
         const riskSizes = [1,2,3,4,5,10]
         riskSizes.forEach((value, index, array) => {
-            summary = `${summary}\nRisk <bUSDT ${value}></b> ➡️ Entry <b>USDT ${(value * entrySize).toFixed(2)}</b>`
+            summary = `${summary}\nRisk <b>USDT ${value}></b> ➡️ Entry <b>USDT ${(value * entrySize).toFixed(2)}</b>`
         })
         return summary
     }
