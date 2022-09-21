@@ -44,13 +44,11 @@ class RiskBot {
                         NEXT: {
                             target: 'entry',
                             actions: [
-                                (_, event) => {
-                                    assign({
-                                        direction: (context, _) => {
-                                            context.direction = event.payload.input
-                                        }
-                                    })
-                                }
+                                assign({
+                                    direction: (context, event) => {
+                                        context.direction = event.payload.input
+                                    }
+                                })
                             ]
                         }
                     },
@@ -63,13 +61,11 @@ class RiskBot {
                         NEXT: {
                             target: 'exit',
                             actions: [
-                                (_, event) => {
-                                    assign({
-                                        entry: (context, _) => {
-                                            context.entry = event.payload.input
-                                        }
-                                    })
-                                }
+                                assign({
+                                    entry: (context, event) => {
+                                        context.entry = event.payload.input
+                                    }
+                                })
                             ]
                         }
                     },
@@ -82,13 +78,11 @@ class RiskBot {
                         NEXT: {
                             target: 'summary',
                             actions: [
-                                (_, event) => {
-                                    assign({
-                                        exit: (context, _) => {
-                                            context.exit = event.payload.input
-                                        }
-                                    })
-                                }
+                                assign({
+                                    exit: (context, event) => {
+                                        context.exit = event.payload.input
+                                    }
+                                })
                             ]
                         }
                     },
