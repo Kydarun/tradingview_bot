@@ -47,7 +47,7 @@ class RiskBot {
                                 (_, event) => {
                                     assign({
                                         direction: (context, _) => {
-                                            context.direction = event.payload
+                                            context.direction = event.payload.input
                                         }
                                     })
                                 }
@@ -66,7 +66,7 @@ class RiskBot {
                                 (_, event) => {
                                     assign({
                                         entry: (context, _) => {
-                                            context.entry = event.payload
+                                            context.entry = event.payload.input
                                         }
                                     })
                                 }
@@ -85,7 +85,7 @@ class RiskBot {
                                 (_, event) => {
                                     assign({
                                         exit: (context, _) => {
-                                            context.exit = event.payload
+                                            context.exit = event.payload.input
                                         }
                                     })
                                 }
@@ -120,7 +120,7 @@ class RiskBot {
                 }
                 else {
                     if (!this.stateMachine.getSnapshot().matches('summary')) {
-                        this.stateMachine.send('NEXT')
+                        this.stateMachine.send({type: 'NEXT', payload: { input: message.text }})
                     }
                 }
             }
