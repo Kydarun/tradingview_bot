@@ -1,4 +1,4 @@
-const { createMachine, interpret, send } = require('xstate')
+const { createMachine, interpret, send, assign } = require('xstate')
 const TelegramBot = require('node-telegram-bot-api')
 
 class RiskBot {
@@ -41,7 +41,20 @@ class RiskBot {
                 },
                 direction: {
                     on: {
-                        NEXT: 'entry'
+                        NEXT: {
+                            target: 'entry',
+                            actions: [
+                                (_, event) => {
+                                    assign({
+                                        direction: (context, _) => {
+                                            context.direction = event.payload
+                                        }
+                                    })
+                                    console.log(event.payload)
+                                },
+                                send('NEXT')
+                            ]
+                        }
                     },
                     meta: {
                         message: 'Enter Direction.'
@@ -49,7 +62,19 @@ class RiskBot {
                 },
                 entry: {
                     on: {
-                        NEXT: 'exit'
+                        NEXT: {
+                            target: 'exit',
+                            actions: [
+                                (_, event) => {
+                                    assign({
+                                        entry: (context, _) => {
+                                            context.entry = event.payload
+                                        }
+                                    })
+                                },
+                                send('NEXT')
+                            ]
+                        }
                     },
                     meta: {
                         message: 'Enter Entry Price.'
@@ -57,7 +82,19 @@ class RiskBot {
                 },
                 exit: {
                     on: {
-                        NEXT: 'summary'
+                        NEXT: {
+                            target: 'summary',
+                            actions: [
+                                (_, event) => {
+                                    assign({
+                                        exit: (context, _) => {
+                                            context.exit = event.payload
+                                        }
+                                    })
+                                },
+                                send('NEXT')
+                            ]
+                        }
                     },
                     meta: {
                         message: 'Enter Stop Loss.'
