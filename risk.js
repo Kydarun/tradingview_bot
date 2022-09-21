@@ -149,27 +149,14 @@ class RiskBot {
         if (!this.debug) {
             this.bot.on('message', message => {
                 if (message.chat.id === this.chatId) {
-                    if (message.text === '/risk') {
-                        if (this.stateMachine.getSnapshot().value !== 'ready') {
-                            this.stateMachine.send('RESTART')
-                        }
-                        else {
-                            this.stateMachine.start()
-                        }
-                        this.stateMachine.send('NEXT')
-                    }
-                    else {
-                        if (!this.stateMachine.getSnapshot().matches('summary')) {
-                            this.stateMachine.send({type: 'NEXT', payload: { input: message.text }})
-                        }
-                    }
+                    this.next(message.text)
                 }
             })
         }
     }
 
-    debugNextStep(input) {
-        if (input === '/risk') {
+    next(text) {
+        if (text === '/risk') {
             if (this.stateMachine.getSnapshot().value !== 'ready') {
                 this.stateMachine.send('RESTART')
             }
@@ -180,7 +167,7 @@ class RiskBot {
         }
         else {
             if (!this.stateMachine.getSnapshot().matches('summary')) {
-                this.stateMachine.send({type: 'NEXT', payload: { input: input }})
+                this.stateMachine.send({type: 'NEXT', payload: { input: text }})
             }
         }
     }
