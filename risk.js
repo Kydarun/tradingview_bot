@@ -153,7 +153,9 @@ class RiskBot {
                         if (this.stateMachine.getSnapshot().value !== 'ready') {
                             this.stateMachine.send('RESTART')
                         }
-                        this.stateMachine.start()
+                        else {
+                            this.stateMachine.start()
+                        }
                         this.stateMachine.send('NEXT')
                     }
                     else {
@@ -171,7 +173,9 @@ class RiskBot {
             if (this.stateMachine.getSnapshot().value !== 'ready') {
                 this.stateMachine.send('RESTART')
             }
-            this.stateMachine.start()
+            else {
+                this.stateMachine.start()
+            }
             this.stateMachine.send('NEXT')
         }
         else {
