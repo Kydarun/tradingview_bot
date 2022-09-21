@@ -96,20 +96,21 @@ class RiskBot {
 
     initBot() {
         this.bot = new TelegramBot(this.botId, { polling: true })
+        this.stateMachine.onTransition(state => {
+            if (state.value === 'summary') {
+                this.bot.sendMessage(this.chatId, this.getSummary(state.context), { parse_mode: 'HTML' })
+            }
+            else {
+                const meta = this.mergeMeta(state.meta)
+                this.bot.sendMessage(this.chatId, meta.message, {
+                    'reply_markup': meta.reply_markup
+                })
+            }
+        })
         this.bot.on('message', message => {
             if (message.chat.id === this.chatId) {
                 if (message.text === '/risk') {
-                    this.stateMachine.onTransition(state => {
-                        if (state.value === 'summary') {
-                            this.bot.sendMessage(this.chatId, this.getSummary(state.context), { parse_mode: 'HTML' })
-                        }
-                        else {
-                            const meta = this.mergeMeta(state.meta)
-                            this.bot.sendMessage(this.chatId, meta.message, {
-                                'reply_markup': meta.reply_markup
-                            })
-                        }
-                    }).start()
+                    this.stateMachine.start()
                     this.stateMachine.send('NEXT')
                 }
                 else {
