@@ -137,7 +137,7 @@ class RiskBot {
     getSummary(context) {
         if (isNaN(context.entry)) return 'Invalid Entry Price. Please type /risk to restart.'
         if (isNaN(context.exit)) return 'Invalid Exit Price. Please type /risk to restart.'
-        if (context.direction !== 'LONG' && context.direction !== 'SHORT') return 'Unable to identify direction. Please type /risk to restart.'
+        if (context.direction.toLowerCase() !== 'long' && context.direction.toLowerCase() !== 'short') return 'Unable to identify direction. Please type /risk to restart.'
         
         var summary = `<b>Entry Size Summary</b>\n\nDirection: ${context.direction}\nEntry: ${context.entry}\nStop Loss: ${context.exit}\n\n`
         
