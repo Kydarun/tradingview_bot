@@ -33,6 +33,13 @@ class RiskBot {
             },
             states: {
                 ready: {
+                    entry: [
+                        assign({
+                            direction: (_, event) => '',
+                            entry: (_, event) => '',
+                            exit: (_, event) => ''
+                        })
+                    ],
                     on: {
                         NEXT: 'direction'
                     },
@@ -93,6 +100,7 @@ class RiskBot {
                 }
             }
         }))
+        this.initialState = this.stateMachine.initialState
     }
 
     initBot() {
@@ -123,7 +131,7 @@ class RiskBot {
                 if (message.chat.id === this.chatId) {
                     if (message.text === '/risk') {
                         if (this.stateMachine.getSnapshot().value !== 'ready') {
-                            this.stateMachine.stop()
+                            
                         }
                         this.stateMachine.start()
                         this.stateMachine.send('NEXT')
