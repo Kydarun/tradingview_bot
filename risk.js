@@ -101,7 +101,7 @@ class RiskBot {
                 if (message.text === '/risk') {
                     this.stateMachine.onTransition(state => {
                         if (state.value === 'summary') {
-                            this.bot.sendMessage(this.chatId, `Direction: ${state.context.direction}\nEntry: ${state.context.entry}\nExit: ${state.context.exit}`)
+                            this.bot.sendMessage(this.chatId, this.getSummary(state.context), { parse_mode: 'HTML' })
                         }
                         else {
                             const meta = this.mergeMeta(state.meta)
@@ -121,8 +121,32 @@ class RiskBot {
         })
     }
 
-    getSummary() {
-        var summary = '<b>Entry Plan Summary</b>\n'
+    getEntrySize(context) {
+        const direction = context.direction
+        const entry = parseFloat(context.entry)
+        const sl = parseFloat(context.exit)
+
+        const loss = 1
+
+        const entrySizeInCoin = loss / (direction.toLowerCase() == 'long' ? entry - sl : sl - entry)
+        const entrySizeInUsdt = entrySizeInCoin * entry
+
+        return entrySizeInUsdt
+    }
+
+    getSummary(context) {
+        if (isNaN(context.entry)) return 'Invalid Entry Price. Please type /risk to restart.'
+        if (isNaN(context.exit)) return 'Invalid Exit Price. Please type /risk to restart.'
+        if (context.direction !== 'LONG' && context.direction !== 'SHORT') return 'Unable to identify direction. Please type /risk to restart.'
+        
+        var summary = `<b>Entry Size Summary</b>\n\nDirection: ${context.direction}\nEntry: ${context.entry}\nStop Loss: ${context.exit}\n\n`
+        
+        const entrySize = this.getEntrySize(context)
+        for (i in [1,2,3,4,5,10]) {
+            summary = `${summary}\nRisk USDT${i} = USDT${(i * entrySize).toFixed(2)}`
+        }
+
+        return summary
     }
 }
 
